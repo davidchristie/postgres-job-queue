@@ -1,8 +1,13 @@
 import { workerData } from "node:worker_threads";
 import { processAllJobs } from "./core/process-all-jobs";
 
-const { queue } = workerData;
+async function run() {
+  const { workerName, queue } = workerData;
+  console.log("Worker thread started:", queue);
+  await processAllJobs({
+    queue,
+    logPrefix: `[${workerName}] `,
+  });
+}
 
-console.log("Worker thread started:", queue);
-
-processAllJobs(queue);
+run();

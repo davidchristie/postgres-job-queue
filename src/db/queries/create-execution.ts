@@ -1,5 +1,5 @@
 import { PoolClient } from "pg";
-import { Execution, Job } from "../../types";
+import { Execution } from "../../types";
 import { parseExecutionRow } from "../utilities/parse-execution-row";
 
 export async function createExecution(

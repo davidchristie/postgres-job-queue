@@ -8,9 +8,11 @@ import { updateJobStatus } from "../db/queries/update-job-status";
 import { Job } from "../types";
 import { logTimeTaken } from "../utilities/log-time-taken";
 
-const logPrefix = "  - ";
-
-export async function processNextJob(queue: string): Promise<Job | null> {
+export async function processNextJob(options: {
+  queue: string;
+  logPrefix?: string;
+}): Promise<Job | null> {
+  const { queue, logPrefix = "" } = options;
   const client = await pool.connect();
   try {
     await logTimeTaken(beginTransaction, logPrefix)(client);
@@ -20,7 +22,7 @@ export async function processNextJob(queue: string): Promise<Job | null> {
     if (currentJob === null) {
       return null;
     }
-    console.log("Processing job:", currentJob.id);
+    console.log(`${logPrefix}Processing job:`, currentJob.id);
     await logTimeTaken(createExecution, logPrefix)(client, {
       jobId: currentJob.id,
     });
