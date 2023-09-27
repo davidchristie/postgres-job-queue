@@ -10,11 +10,13 @@ import { logTimeTaken } from "../utilities/log-time-taken";
 
 const logPrefix = "  - ";
 
-export async function processNextJob(): Promise<Job | null> {
+export async function processNextJob(queue: string): Promise<Job | null> {
   const client = await pool.connect();
   try {
     await logTimeTaken(beginTransaction, logPrefix)(client);
-    const currentJob = await logTimeTaken(selectNextJob, logPrefix)(client);
+    const currentJob = await logTimeTaken(selectNextJob, logPrefix)(client, {
+      queue,
+    });
     if (currentJob === null) {
       return null;
     }

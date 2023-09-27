@@ -2,7 +2,10 @@ import { PoolClient } from "pg";
 import { Job } from "../../types";
 import { parseJobRow } from "../utilities/parse-job-row";
 
-export async function selectNextJob(client: PoolClient): Promise<Job | null> {
+export async function selectNextJob(
+  client: PoolClient,
+  input: { queue: string }
+): Promise<Job | null> {
   const result = await client.query(
     `
       select
@@ -12,10 +15,12 @@ export async function selectNextJob(client: PoolClient): Promise<Job | null> {
         status
       from jobs
       where status = 'pending'
+      and queue = $1
       order by created_at asc
       for update skip locked
       limit 1
-    `
+    `,
+    [input.queue]
   );
   if (result.rows.length === 0) {
     return null;

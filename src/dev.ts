@@ -19,7 +19,9 @@ async function dev(): Promise<void> {
   Array(workerCount)
     .fill(null)
     .map(() => {
-      new Worker(path.resolve(__dirname, "worker.js"));
+      new Worker(path.resolve(__dirname, "worker.js"), {
+        workerData: { queue },
+      });
     });
 }
 
