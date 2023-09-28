@@ -7,4 +7,5 @@ export const pool = new Pool({
   user: config.postgres.user,
   password: config.postgres.password,
   port: 5432,
+  // max: 50, // maximum number of clients in the pool
 });

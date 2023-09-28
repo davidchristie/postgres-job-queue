@@ -8,10 +8,13 @@ import { updateJobStatus } from "../db/queries/update-job-status";
 import { Job } from "../types";
 import { logTimeTaken } from "../utilities/log-time-taken";
 
-export async function processNextJob(options: {
-  queue: string;
-  logPrefix?: string;
-}): Promise<Job | null> {
+export async function processNextJob(
+  options: {
+    queue: string;
+    logPrefix?: string;
+  },
+  handler: () => Promise<void>
+): Promise<Job | null> {
   const { queue, logPrefix = "" } = options;
   const client = await pool.connect();
   try {
@@ -26,6 +29,7 @@ export async function processNextJob(options: {
     await logTimeTaken(createExecution, logPrefix)(client, {
       jobId: currentJob.id,
     });
+    await handler();
     const completedJob = await logTimeTaken(updateJobStatus, logPrefix)(
       client,
       {
